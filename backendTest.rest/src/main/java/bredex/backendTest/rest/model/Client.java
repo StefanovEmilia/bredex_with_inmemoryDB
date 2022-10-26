@@ -6,8 +6,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="users")
-public class User {
+@Table(name="clients")
+public class Client {
 	
 	@Id
 	@Column(name="apiKey")
@@ -45,7 +45,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [apiKey=" + apiKey + ", name=" + name + ", email=" + email + "]";
+		return "Client [apiKey=" + apiKey + ", name=" + name + ", email=" + email + "]";
 	}
 	
 	

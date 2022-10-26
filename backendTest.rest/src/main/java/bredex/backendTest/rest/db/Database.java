@@ -12,7 +12,7 @@ import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import bredex.backendTest.rest.model.Position;
-import bredex.backendTest.rest.model.User;
+import bredex.backendTest.rest.model.Client;
 
 public class Database {
 
@@ -32,11 +32,11 @@ public class Database {
 		Session session = sessionFactory.openSession();
 		Transaction tr = session.beginTransaction();
 
-		Query q = session.createQuery("SELECT u FROM User u WHERE email= :email", User.class);
+		Query q = session.createQuery("SELECT c FROM Client c WHERE c.email= :email", Client.class);
 		q.setParameter("email", email);
-		List<User> users = q.getResultList();
+		List<Client> clients = q.getResultList();
 
-		if (users.size() > 0) {
+		if (clients.size() > 0) {
 			exists = true;
 		}
 
@@ -46,30 +46,30 @@ public class Database {
 		return exists;
 	}
 
-	public void saveClient(User user) {
+	public void saveClient(Client client) {
 
 		Session session = sessionFactory.openSession();
 		Transaction tr = session.beginTransaction();
 
-		session.save(user);
+		session.save(client);
 
 		tr.commit();
 		session.close();
 	}
 
-	public User getClientByApiKey(String apiKey) {
+	public Client getClientByApiKey(String apiKey) {
 
-		User user = null;
+		Client client = null;
 
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 
-		user = session.get(User.class, apiKey);
+		client = session.get(Client.class, apiKey);
 
 		tx.commit();
 		session.close();
 
-		return user;
+		return client;
 	}
 
 	public void savePosition(Position pos) {
@@ -149,8 +149,8 @@ public class Database {
 
 		// Set the adverter's name by the API key
 		// I think its a must, because the API key is a sensitive data, but the advertiser is an important detail
-		User user = getClientByApiKey(pos.getAdverter());
-		pos.setAdverter(user.getName());
+		Client client = getClientByApiKey(pos.getAdverter());
+		pos.setAdverter(client.getName());
 
 		return pos;
 	}

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import bredex.backendTest.rest.db.Database;
 import bredex.backendTest.rest.model.Position;
-import bredex.backendTest.rest.model.User;
+import bredex.backendTest.rest.model.Client;
 
 @RestController
 public class AppController {
@@ -40,12 +40,12 @@ public class AppController {
 				//If the email is unique, generate a random API key and save the client to the database
 				String apiKey = UUID.randomUUID().toString();
 				
-				User user = new User();
-				user.setName(name);
-				user.setEmail(email);
-				user.setApiKey(apiKey);
+				Client client = new Client();
+				client.setName(name);
+				client.setEmail(email);
+				client.setApiKey(apiKey);
 				
-				db.saveClient(user);
+				db.saveClient(client);
 			
 				response = apiKey;
 				
@@ -202,9 +202,9 @@ public class AppController {
 		
 		Database db = new Database();
 		
-		User user = db.getClientByApiKey(apiKey);
+		Client client = db.getClientByApiKey(apiKey);
 		
-		if(user != null) {
+		if(client != null) {
 			valid = true;
 		}
 		
