@@ -17,7 +17,7 @@ public class Position {
 	private int id;
 	
 	@Column(name="apiKey")
-	private String apiKey;
+	private String adverter;
 	
 	@Column(name="roleName")
 	private String roleName;
@@ -33,12 +33,12 @@ public class Position {
 		this.id = id;
 	}
 
-	public String getApiKey() {
-		return apiKey;
+	public String getAdverter() {
+		return adverter;
 	}
 
-	public void setApiKey(String apiKey) {
-		this.apiKey = apiKey;
+	public void setAdverter(String adverter) {
+		this.adverter = adverter;
 	}
 
 	public String getRoleName() {
@@ -59,9 +59,9 @@ public class Position {
 
 	@Override
 	public String toString() {
-		return "Position [id=" + id + ", apiKey=" + apiKey + ", roleName=" + roleName + ", location=" + location + "]";
+		return "Position [id=" + id + ", adverter=" + adverter + ", roleName=" + roleName + ", location=" + location
+				+ "]";
 	}
-	
 	
 
 }

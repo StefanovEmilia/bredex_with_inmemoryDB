@@ -9,8 +9,8 @@
 		<property name="connection.username">root</property>
 		<property name="connection.password">root</property>
 		
-		<mapping class="bredex.backendTest.rest.Position" />
-		<mapping class="bredex.backendTest.rest.User" />
+		<mapping class="bredex.backendTest.rest.model.Position" />
+		<mapping class="bredex.backendTest.rest.model.User" />
 
 	</session-factory>
 </hibernate-configuration>
