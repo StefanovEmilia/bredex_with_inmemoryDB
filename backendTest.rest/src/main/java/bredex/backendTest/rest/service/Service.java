@@ -37,23 +37,6 @@ public class Service {
 
 	}
 
-	public static boolean isValidApi(String apiKey) {
-
-		boolean valid = false;
-
-		Database db = new Database();
-
-		Client client = db.getClientByApiKey(apiKey);
-
-		if (client != null) {
-			valid = true;
-		}
-
-		db.close();
-
-		return valid;
-	}
-
 	public static Response invalidApi() {
 
 		Response response = new ErrorMessage(11, false);

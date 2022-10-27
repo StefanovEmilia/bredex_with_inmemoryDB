@@ -1,5 +1,6 @@
 package bredex.backendTest.rest.controller;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +24,7 @@ import bredex.backendTest.rest.model.Client;
 public class AppController {
 
 	@PostMapping("/client")
-	public Response regClient(@RequestParam(name="name") String name, @RequestParam(name="email") String email) {
+	public Response regClient(@RequestParam(name="name") String name, @RequestParam(name="email") String email) throws Exception {
 		
 		//Create a response. 
 		Response response = new Response();
@@ -78,19 +79,19 @@ public class AppController {
 	
 	@PostMapping("/position")
 	public Response createPosition(@RequestParam(name="roleName") String roleName, @RequestParam(name="location") String location, 
-								 @RequestParam(name="apiKey") String apiKey) {
+								 @RequestParam(name="apiKey") String apiKey) throws Exception {
 		
 		Response response = new Response();	
+		Database db = new Database();
 		
 		//check the apiKey		
-		if( Service.isValidApi(apiKey)) {
+		if( db.isValidApi(apiKey)) {
 			
 			//check length validations
 			if( Service.isValidRoleAndLocation(roleName, location) ) {
 				
 				//save the position to the database and create the url
-				Database db = new Database();
-				
+								
 				Position pos = new Position();
 				pos.setAdvertiser(apiKey);
 				pos.setLocation(location);
@@ -119,20 +120,19 @@ public class AppController {
 	
 	@GetMapping("/position/search")
 	public Response getPositions(@RequestParam(name="keyword")String keyword, @RequestParam(name="location")String location, 
-											@RequestParam(name="apiKey")String apiKey) {
+											@RequestParam(name="apiKey")String apiKey) throws Exception {
 		
 		Response response = new Response();
+		Database db = new Database();
 		
 		//Check the API key
-		if( Service.isValidApi(apiKey)) {
+		if( db.isValidApi(apiKey)) {
 			
 			//Check length validations
 			if(Service.isValidRoleAndLocation(keyword, location)) {
 				
 				//Search positions and create the URL list. 
-				//Notice that if the search is unsuccessful, and there are no validation errors, the list size will be 0!
-				Database db = new Database();
-				
+				//Notice that if the search is unsuccessful, and there are no validation errors, the list size will be 0!			
 				List<Position> positions = db.getPositions(keyword, location);
 				ArrayList<String> urlList = new ArrayList<String>();
 				
@@ -171,7 +171,7 @@ public class AppController {
 	
 	// I think this request should be understood as being allowed for everyone, regardless of whether they have an API key or not.
 	@GetMapping("/position/{id}")
-	public Position getPositionById(@PathVariable("id") int id) {
+	public Position getPositionById(@PathVariable("id") int id) throws Exception {
 		
 		Database db = new Database();
 		

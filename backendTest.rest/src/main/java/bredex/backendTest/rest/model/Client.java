@@ -1,23 +1,22 @@
 package bredex.backendTest.rest.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name="clients")
 public class Client {
-	
-	@Id
-	@Column(name="apiKey")
+
 	private String apiKey;
-	
-	@Column(name="name")
 	private String name;
-	
-	@Column(name="email")
 	private String email;
+
+	public Client() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Client(String apiKey, String name, String email) {
+		super();
+		this.apiKey = apiKey;
+		this.name = name;
+		this.email = email;
+	}
 
 	public String getApiKey() {
 		return apiKey;

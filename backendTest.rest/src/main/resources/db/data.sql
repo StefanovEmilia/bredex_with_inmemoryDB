@@ -12,4 +12,5 @@ INSERT INTO positions VALUES (3, '22ce4d33-6f0b-47b5-b3bf-a01204d9940b', 'senior
 INSERT INTO positions VALUES (4, '22ce4d33-6f0b-47b5-b3bf-a01204d9940b', 'senior java engineer', 'remote');
 INSERT INTO positions VALUES (5, 'ab796345-f91f-4646-a294-f8e6f1fe0807', 'senior java engineer', 'remote');
 INSERT INTO positions VALUES (6, 'test', 'junior python engineer', 'london');
+INSERT INTO positions VALUES (7, 'test', 'java backend developer', 'london');
 
