@@ -25,6 +25,7 @@ public class Database {
 		sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
 	}
 
+	//Check if an email already exists in the database or not
 	public boolean isEmailExists(String email) {
 
 		boolean exists = false;
@@ -46,6 +47,7 @@ public class Database {
 		return exists;
 	}
 
+	//Register a new client
 	public void saveClient(Client client) {
 
 		Session session = sessionFactory.openSession();
@@ -56,7 +58,11 @@ public class Database {
 		tr.commit();
 		session.close();
 	}
-
+	
+	/*I use this method for API key validation. 
+	 * If there are any clients with the requested API key, validation is OK.
+	 * If there are not, than there will be an API key validation problem.
+	 */
 	public Client getClientByApiKey(String apiKey) {
 
 		Client client = null;
@@ -72,6 +78,7 @@ public class Database {
 		return client;
 	}
 
+	//Registrate a new jobpost
 	public void savePosition(Position pos) {
 
 		Session session = sessionFactory.openSession();
@@ -84,24 +91,9 @@ public class Database {
 
 	}
 
-	public int getLatestPositionID() {
-
-		int id = 0;
-
-		Session session = sessionFactory.openSession();
-		Transaction tr = session.beginTransaction();
-
-		Query q = session.createQuery("SELECT p FROM Position p");
-		List<Position> positions = q.getResultList();
-
-		id = positions.get(positions.size() - 1).getId();
-
-		tr.commit();
-		session.close();
-
-		return id;
-	}
-
+	/* This method help us to gather all the positions from the database regarding by the keyword location.
+	 * If no fields are filled in, all positions will be collected.
+	 */
 	public List<Position> getPositions(String keyword, String location) {
 
 		List<Position> positions = null;
@@ -112,22 +104,11 @@ public class Database {
 		String query = "";
 		Query q = null;
 
-		// Check if we want to search location too
-		if (location.length() > 0) {
+		query = "SELECT p FROM Position p WHERE p.roleName LIKE :keyword AND p.location LIKE :location";
 
-			query = "SELECT p FROM Position p WHERE p.roleName LIKE :keyword AND p.location = :location";
-
-			q = session.createQuery(query, Position.class);
-			q.setParameter("keyword", "%" + keyword + "%");
-			q.setParameter("location", location);
-
-		} else {
-
-			// If we don't want to search location, only the roles
-			query = "SELECT p FROM Position p WHERE p.roleName LIKE :keyword";
-			q = session.createQuery(query, Position.class);
-			q.setParameter("keyword", "%" + keyword + "%");
-		}
+		q = session.createQuery(query, Position.class);
+		q.setParameter("keyword", "%" + keyword + "%");
+		q.setParameter("location", "%" + location + "%");
 
 		positions = q.getResultList();
 
@@ -137,6 +118,7 @@ public class Database {
 		return positions;
 	}
 
+	//Displaying the data of one current position
 	public Position getPositionById(int id) {
 
 		Session session = sessionFactory.openSession();
@@ -149,8 +131,8 @@ public class Database {
 
 		// Set the adverter's name by the API key
 		// I think its a must, because the API key is a sensitive data, but the advertiser is an important detail
-		Client client = getClientByApiKey(pos.getAdverter());
-		pos.setAdverter(client.getName());
+		Client client = getClientByApiKey(pos.getAdvertiser());
+		pos.setAdvertiser(client.getName());
 
 		return pos;
 	}

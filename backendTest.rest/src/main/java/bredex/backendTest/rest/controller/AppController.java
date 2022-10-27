@@ -92,13 +92,13 @@ public class AppController {
 				Database db = new Database();
 				
 				Position pos = new Position();
-				pos.setAdverter(apiKey);
+				pos.setAdvertiser(apiKey);
 				pos.setLocation(location);
 				pos.setRoleName(roleName);
 				
 				db.savePosition(pos);
 				
-				int id = db.getLatestPositionID();
+				int id = pos.getId();
 				
 				response.setMessage("http://localhost:8080/position/" + id);
 				
