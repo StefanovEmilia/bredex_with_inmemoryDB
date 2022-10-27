@@ -16,6 +16,7 @@ import bredex.backendTest.rest.model.Position;
 import bredex.backendTest.rest.response.ErrorMessage;
 import bredex.backendTest.rest.response.PositionList;
 import bredex.backendTest.rest.response.Response;
+import bredex.backendTest.rest.service.Service;
 import bredex.backendTest.rest.model.Client;
 
 @RestController
@@ -82,10 +83,10 @@ public class AppController {
 		Response response = new Response();	
 		
 		//check the apiKey		
-		if(isValidApi(apiKey)) {
+		if( Service.isValidApi(apiKey)) {
 			
 			//check length validations
-			if( isValidRoleAndLocation(roleName, location) ) {
+			if( Service.isValidRoleAndLocation(roleName, location) ) {
 				
 				//save the position to the database and create the url
 				Database db = new Database();
@@ -106,11 +107,11 @@ public class AppController {
 			} else {	
 				// If there are any validation problems, send an error message
 				response = new ErrorMessage(10, false);
-				response.setMessage(createErrorMessage(roleName, location));				
+				response.setMessage( Service.createErrorMessage(roleName, location));				
 			}			
 		} else {
 			// If the API key is invalid, send an error message
-			response = invalidApi();
+			response = Service.invalidApi();
 		}
 				
 		return response;
@@ -123,10 +124,10 @@ public class AppController {
 		Response response = new Response();
 		
 		//Check the API key
-		if(isValidApi(apiKey)) {
+		if( Service.isValidApi(apiKey)) {
 			
 			//Check length validations
-			if(isValidRoleAndLocation(keyword, location)) {
+			if(Service.isValidRoleAndLocation(keyword, location)) {
 				
 				//Search positions and create the URL list. 
 				//Notice that if the search is unsuccessful, and there are no validation errors, the list size will be 0!
@@ -157,12 +158,12 @@ public class AppController {
 			} else {
 				//If there are any validation problems, send an error message.
 				response = new ErrorMessage(10, false);
-				response.setMessage(createErrorMessage(keyword, location));
+				response.setMessage(Service.createErrorMessage(keyword, location));
 			}
 			
 		} else {
 			//If the API key is invalid, send an error message.
-			response = invalidApi();
+			response = Service.invalidApi();
 		}
 		
 		return response;
@@ -179,64 +180,6 @@ public class AppController {
 		db.close();
 		
 		return pos;
-	}
-	
-	
-	
-	// ----- AUXILIARY METHODS ----- //
-	public boolean isValidRoleAndLocation(String roleName, String location) {
-		
-		 boolean isValid = false;
-		 
-		 if( (roleName.length() <= 50) && (location.length() <= 50) ) {
-			 
-			 isValid = true;
-		 }
-		 
-		 return isValid;
-	}
-	
-	public String createErrorMessage(String role, String location) {
-		
-		String field = "";
-		String error = "";
-		
-		if(role.length() > 50) {
-			field = "role name";
-		} else {
-			field = "location";
-		}
-		
-		error = "Validation problem: The " + field + " is too long! Max. allowed length: 50 characters.";
-		
-		return error;
-		
-	}
-	
-	public boolean isValidApi(String apiKey) {
-		
-		boolean valid = false;
-		
-		Database db = new Database();
-		
-		Client client = db.getClientByApiKey(apiKey);
-		
-		if(client != null) {
-			valid = true;
-		}
-		
-		db.close();
-		
-		return valid;
-	}
-	
-	public Response invalidApi() {
-		 
-		Response response = new ErrorMessage(11, false);
-		response.setMessage("Invalid API Key: You must be granted a valid key.");
-		
-		return response;
-		
 	}
 	
 }
