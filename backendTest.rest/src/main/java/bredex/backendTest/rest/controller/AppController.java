@@ -99,7 +99,8 @@ public class AppController {
 				
 				db.savePosition(pos);
 				
-				int id = pos.getId();
+				List<Position> positions = db.getPositions("", "");
+				int id = positions.get(positions.size() - 1).getId();
 				
 				response.setMessage("http://localhost:8080/position/" + id);
 				

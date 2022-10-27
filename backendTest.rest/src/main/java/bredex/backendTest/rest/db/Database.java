@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import bredex.backendTest.rest.model.Client;
 public class Database {
 
 	private Connection conn;
+	private static boolean firstDatabaseCreated = false;
 
 	public Database() throws Exception {
 		
@@ -37,8 +39,11 @@ public class Database {
 		conn.createStatement().executeUpdate(createPositions);
 		
 		//add data
-		String populateTables = readToString("C:\\Users\\nagyb\\Desktop\\Java 4.1\\Free\\bredex_with_inmemoryDB\\backendTest.rest\\src\\main\\resources\\db\\data.sql");
-		conn.createStatement().executeUpdate(populateTables);
+		if(!firstDatabaseCreated) {
+			String populateTables = readToString("C:\\Users\\nagyb\\Desktop\\Java 4.1\\Free\\bredex_with_inmemoryDB\\backendTest.rest\\src\\main\\resources\\db\\data.sql");
+			conn.createStatement().executeUpdate(populateTables);
+			firstDatabaseCreated = true;
+		}
 	}
 
 	//Check if an email already exists in the database or not
@@ -69,7 +74,7 @@ public class Database {
 		ps.setString(2, client.getName());
 		ps.setString(3, client.getEmail());
 		
-		ps.executeQuery();
+		ps.executeUpdate();
 		
 		ps.close();
 	}
@@ -130,7 +135,7 @@ public class Database {
 		ps.setString(2, pos.getRoleName());
 		ps.setString(3, pos.getLocation());
 		
-		ps.executeQuery();
+		ps.executeUpdate();
 		
 		ps.close();
 
