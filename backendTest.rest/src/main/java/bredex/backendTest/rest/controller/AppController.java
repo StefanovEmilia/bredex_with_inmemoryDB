@@ -13,16 +13,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import bredex.backendTest.rest.db.Database;
 import bredex.backendTest.rest.model.Position;
+import bredex.backendTest.rest.response.ErrorMessage;
+import bredex.backendTest.rest.response.PositionList;
+import bredex.backendTest.rest.response.Response;
 import bredex.backendTest.rest.model.Client;
 
 @RestController
 public class AppController {
 
 	@PostMapping("/client")
-	public String regClient(@RequestParam(name="name") String name, @RequestParam(name="email") String email) {
+	public Response regClient(@RequestParam(name="name") String name, @RequestParam(name="email") String email) {
 		
 		//Create a response. 
-		String response = "";
+		Response response = new Response();
 		
 		//Open the database
 		Database db = new Database();
@@ -47,18 +50,22 @@ public class AppController {
 				
 				db.saveClient(client);
 			
-				response = apiKey;
+				response.setMessage(apiKey);
 				
 			} else {
-				response = "This email already exists.";
+				// If the email already exists, send an error message
+				response = new ErrorMessage(1, false);
+				response.setMessage("This email already exists.");
 			}
 			
 		} else {
-			
+			// If there are any validation problems, send an error message according to the problematic field.
 			if(name.length() <= 100) {
-				response = "Validation problem: Invalid email! Please try again!";
+				response = new ErrorMessage(10, false);
+				response.setMessage("Validation problem: Invalid email! Please try again!");
 			} else {
-				response = "Validation problem: The name is too long! Max. allowed length: 100 characters.";
+				response = new ErrorMessage(10, false);
+				response.setMessage("Validation problem: The name is too long! Max. allowed length: 100 characters.");
 			}
 			
 		}
@@ -69,10 +76,10 @@ public class AppController {
 	}
 	
 	@PostMapping("/position")
-	public String createPosition(@RequestParam(name="roleName") String roleName, @RequestParam(name="location") String location, 
+	public Response createPosition(@RequestParam(name="roleName") String roleName, @RequestParam(name="location") String location, 
 								 @RequestParam(name="apiKey") String apiKey) {
 		
-		String response = "";	
+		Response response = new Response();	
 		
 		//check the apiKey		
 		if(isValidApi(apiKey)) {
@@ -92,27 +99,28 @@ public class AppController {
 				
 				int id = db.getLatestPositionID();
 				
-				response = "http://localhost:8080/position/" + id;
+				response.setMessage("http://localhost:8080/position/" + id);
 				
 				db.close();
 				
-			} else {				
-				
-				response = createErrorMessage(roleName, location);
-			}
-			
+			} else {	
+				// If there are any validation problems, send an error message
+				response = new ErrorMessage(10, false);
+				response.setMessage(createErrorMessage(roleName, location));				
+			}			
 		} else {
-			response = "Invalid API Key!";
+			// If the API key is invalid, send an error message
+			response = invalidApi();
 		}
 				
 		return response;
 	}
 	
 	@GetMapping("/position/search")
-	public ArrayList<String> getPositions(@RequestParam(name="keyword")String keyword, @RequestParam(name="location")String location, 
+	public Response getPositions(@RequestParam(name="keyword")String keyword, @RequestParam(name="location")String location, 
 											@RequestParam(name="apiKey")String apiKey) {
 		
-		ArrayList<String> response = new ArrayList<String>();
+		Response response = new Response();
 		
 		//Check the API key
 		if(isValidApi(apiKey)) {
@@ -121,10 +129,11 @@ public class AppController {
 			if(isValidRoleAndLocation(keyword, location)) {
 				
 				//Search positions and create the URL list. 
-				//Notice that if the search is unsuccessful, and there are no validation errors, the response size will be 0!
+				//Notice that if the search is unsuccessful, and there are no validation errors, the list size will be 0!
 				Database db = new Database();
 				
 				List<Position> positions = db.getPositions(keyword, location);
+				ArrayList<String> urlList = new ArrayList<String>();
 				
 				//Check if we found results
 				if(positions.size() > 0) {
@@ -134,24 +143,32 @@ public class AppController {
 						
 						int id = positions.get(i).getId();
 						String url = "http://localhost:8080/position/" + id;
-						response.add(url);
+						urlList.add(url);
 						
 					}
+					
+					response = new PositionList(urlList);
 				}
+				
+				response.setMessage("Search results: " + urlList.size() + " jobs matching your request found.");
 				
 				db.close();
 				
 			} else {
-				response.add(createErrorMessage(keyword, location));
+				//If there are any validation problems, send an error message.
+				response = new ErrorMessage(10, false);
+				response.setMessage(createErrorMessage(keyword, location));
 			}
 			
 		} else {
-			response.add("Invalid API Key!");
+			//If the API key is invalid, send an error message.
+			response = invalidApi();
 		}
 		
 		return response;
 	}
 	
+	// I think this request should be understood as being allowed for everyone, regardless of whether they have an API key or not.
 	@GetMapping("/position/{id}")
 	public Position getPositionById(@PathVariable("id") int id) {
 		
@@ -212,4 +229,14 @@ public class AppController {
 		
 		return valid;
 	}
+	
+	public Response invalidApi() {
+		 
+		Response response = new ErrorMessage(11, false);
+		response.setMessage("Invalid API Key: You must be granted a valid key.");
+		
+		return response;
+		
+	}
+	
 }
