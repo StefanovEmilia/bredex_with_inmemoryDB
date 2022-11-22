@@ -1,214 +1,166 @@
 package bredex.backendTest.rest.db;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
+import javax.persistence.Query;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import bredex.backendTest.rest.model.Position;
+import bredex.backendTest.rest.service.Service;
 import bredex.backendTest.rest.model.Client;
 
 public class Database {
 
-	private Connection conn;
-	private static boolean firstDatabaseCreated = false;
+	private SessionFactory sessionFactory;
 
-	public Database() throws Exception {
-		
-		try {
-		     Class.forName("org.hsqldb.jdbc.JDBCDriver" );
-		 } catch (Exception e) {
-		     System.err.println("ERROR: failed to load HSQLDB JDBC driver.");
-		     e.printStackTrace();
-		     return;
-		 }
+	public Database() {
 
-		conn = DriverManager.getConnection("jdbc:hsqldb:mem:testdb", "sa", "");
-		
-		//create tables
-		String createClients = readToString("C:\\Users\\nagyb\\Desktop\\Java 4.1\\Free\\bredex_with_inmemoryDB\\backendTest.rest\\src\\main\\resources\\db\\clients.sql");
-		conn.createStatement().executeUpdate(createClients);
-		String createPositions = readToString("C:\\Users\\nagyb\\Desktop\\Java 4.1\\Free\\bredex_with_inmemoryDB\\backendTest.rest\\src\\main\\resources\\db\\positions.sql");
-		conn.createStatement().executeUpdate(createPositions);
-		
-		//add data
-		if(!firstDatabaseCreated) {
-			String populateTables = readToString("C:\\Users\\nagyb\\Desktop\\Java 4.1\\Free\\bredex_with_inmemoryDB\\backendTest.rest\\src\\main\\resources\\db\\data.sql");
-			conn.createStatement().executeUpdate(populateTables);
-			firstDatabaseCreated = true;
+		StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
+
+		sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
+
+		Session session = sessionFactory.openSession();
+		Transaction tr = session.beginTransaction();
+
+		List<Client> clients = Service.clientsDML();
+		List<Position> positions = Service.positionsDML();
+
+		for (int i = 0; i < clients.size(); i++) {
+			session.save(clients.get(i));
 		}
+
+		for (int i = 0; i < positions.size(); i++) {
+			session.save(positions.get(i));
+		}
+
+		tr.commit();
+		session.close();
+
 	}
 
-	//Check if an email already exists in the database or not
-	public boolean isEmailExists(String email) throws SQLException {
+	// Check if an email already exists in the database or not
+	public boolean isEmailExists(String email) {
 
 		boolean exists = false;
-		
-		PreparedStatement ps = conn.prepareStatement("SELECT * FROM clients WHERE email= ?");
-		ps.setString(1, email);
-		
-		ResultSet rs = ps.executeQuery();
 
-		if(rs.next()) {
+		Session session = sessionFactory.openSession();
+		Transaction tr = session.beginTransaction();
+
+		Query q = session.createQuery("SELECT c FROM Client c WHERE c.email= :email", Client.class);
+		q.setParameter("email", email);
+		List<Client> clients = q.getResultList();
+
+		if (clients.size() > 0) {
 			exists = true;
 		}
-		
-		rs.close();
-		ps.close();
+
+		tr.commit();
+		session.close();
 
 		return exists;
 	}
 
-	//Register a new client
-	public void saveClient(Client client) throws SQLException {
+	// Register a new client
+	public void saveClient(Client client) {
 
-		PreparedStatement ps = conn.prepareStatement("INSERT INTO clients (apiKey, name, email) VALUES (?,?,?)");
-		ps.setString(1, client.getApiKey());
-		ps.setString(2, client.getName());
-		ps.setString(3, client.getEmail());
-		
-		ps.executeUpdate();
-		
-		ps.close();
+		Session session = sessionFactory.openSession();
+		Transaction tr = session.beginTransaction();
+
+		session.save(client);
+
+		tr.commit();
+		session.close();
 	}
-	
-	/*I use this method for API key validation. 
-	 * If there are any clients with the requested API key, validation is OK.
-	 * If there are not, than there will be an API key validation problem.
+
+	/*
+	 * I use this method for API key validation. If there are any clients with the
+	 * requested API key, validation is OK. If there are not, than there will be an
+	 * API key validation problem.
 	 */
-	public boolean isValidApi(String apiKey) throws SQLException {
+	public Client getClientByApiKey(String apiKey) {
 
-		boolean valid = false;
-
-		PreparedStatement ps = conn.prepareStatement("SELECT * FROM clients WHERE apiKey=?");
-		ps.setString(1, apiKey);
-		
-		ResultSet rs = ps.executeQuery();
-		
-		if(rs.next()) {			
-			valid = true;
-		}
-		
-		rs.close();
-		ps.close();
-
-		return valid;
-	}
-	
-	//Get a client by the api key
-	public Client getClientByApiKey(String apiKey) throws SQLException {
-		
 		Client client = null;
-		
-		PreparedStatement ps = conn.prepareStatement("SELECT * FROM clients WHERE apiKey=?");
-		ps.setString(1, apiKey);
-		
-		ResultSet rs = ps.executeQuery();
-		
-		while (rs.next()) {			
-			
-			String name = rs.getString("name");
-			String email = rs.getString("email");
-			
-			client = new Client(apiKey, name, email);
-		}
-		
-		rs.close();
-		ps.close();
-		
+
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+
+		client = session.get(Client.class, apiKey);
+
+		tx.commit();
+		session.close();
+
 		return client;
-		
 	}
 
-	//Registrate a new jobpost
-	public void savePosition(Position pos) throws SQLException {
+	// Registrate a new jobpost
+	public void savePosition(Position pos) {
 
-		PreparedStatement ps = conn.prepareStatement("INSERT INTO positions (advertiser_apiKey, roleName, location) VALUES (?,?,?)");
-		ps.setString(1, pos.getAdvertiser());
-		ps.setString(2, pos.getRoleName());
-		ps.setString(3, pos.getLocation());
-		
-		ps.executeUpdate();
-		
-		ps.close();
+		Session session = sessionFactory.openSession();
+		Transaction tr = session.beginTransaction();
+
+		session.save(pos);
+
+		tr.commit();
+		session.close();
 
 	}
 
-	/* This method help us to gather all the positions from the database regarding by the keyword location.
-	 * If no fields are filled in, all positions will be collected.
+	/*
+	 * This method help us to gather all the positions from the database regarding
+	 * by the keyword location. If no fields are filled in, all positions will be
+	 * collected.
 	 */
-	public List<Position> getPositions(String keyword, String location) throws SQLException {
+	public List<Position> getPositions(String keyword, String location) {
 
-		List<Position> positions = new ArrayList<Position>();
+		List<Position> positions = null;
 
-		PreparedStatement ps = conn.prepareStatement("SELECT * FROM positions WHERE roleName LIKE ? AND location LIKE ?");
-		ps.setString(1, "%" + keyword + "%");
-		ps.setString(2, "%" + location + "%");
-		
-		ResultSet rs = ps.executeQuery();
-		
-		while(rs.next()) {
-			
-			int id = rs.getInt("id");
-			String advertiser = rs.getString("advertiser_apiKey");
-			String roleName = rs.getString("roleName");
-			String loc = rs.getString("location");
-			
-			Position pos = new Position(id, advertiser, roleName, loc);
-			
-			positions.add(pos);
-		}
-		
-		rs.close();
-		ps.close();
+		Session session = sessionFactory.openSession();
+		Transaction tr = session.beginTransaction();
+
+		String query = "";
+		Query q = null;
+
+		query = "SELECT p FROM Position p WHERE p.roleName LIKE :keyword AND p.location LIKE :location";
+
+		q = session.createQuery(query, Position.class);
+		q.setParameter("keyword", "%" + keyword + "%");
+		q.setParameter("location", "%" + location + "%");
+
+		positions = q.getResultList();
+
+		tr.commit();
+		session.close();
 
 		return positions;
 	}
 
-	//Displaying the data of one current position
-	public Position getPositionById(int id) throws SQLException {
-		
-		Position pos = null;
+	// Displaying the data of one current position
+	public Position getPositionById(int id) {
 
-		PreparedStatement ps = conn.prepareStatement("SELECT * FROM positions WHERE id=?");
-		ps.setInt(1, id);
-		
-		ResultSet rs = ps.executeQuery();
-		
-		while(rs.next()) {
-			
-			String apiKey = rs.getString("advertiser_apiKey");
-			String roleName = rs.getString("roleName");
-			String location = rs.getString("location");
-			
-			pos = new Position(id, apiKey, roleName, location);
-		}
-		
+		Session session = sessionFactory.openSession();
+		Transaction tr = session.beginTransaction();
+
+		Position pos = session.get(Position.class, id);
+
+		tr.commit();
+		session.close();
+
 		// Set the adverter's name by the API key
-		// I think its a must, because the API key is a sensitive data, but the advertiser is an important detail
-		if(pos != null) {
-			Client client = getClientByApiKey(pos.getAdvertiser());
-			pos.setAdvertiser(client.getName());
-		}
+		// I think its a must, because the API key is a sensitive data, but the
+		// advertiser is an important detail
+		Client client = getClientByApiKey(pos.getAdvertiser());
+		pos.setAdvertiser(client.getName());
 
 		return pos;
 	}
 
-	public void close() throws SQLException {
-		conn.close();
+	public void close() {
+		sessionFactory.close();
 	}
-	
-	public static String readToString(String fname) throws Exception {
-		File file = new File(fname);
-		String string = FileUtils.readFileToString(file, "utf-8");
-		return string;
-	}
-
 }

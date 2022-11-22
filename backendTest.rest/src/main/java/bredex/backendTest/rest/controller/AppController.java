@@ -1,6 +1,5 @@
 package bredex.backendTest.rest.controller;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -22,8 +21,8 @@ import bredex.backendTest.rest.model.Client;
 
 @RestController
 public class AppController {
-
-	@PostMapping("/client")
+	
+	@GetMapping("/client")
 	public Response regClient(@RequestParam(name="name") String name, @RequestParam(name="email") String email) throws Exception {
 		
 		//Create a response. 
@@ -85,7 +84,7 @@ public class AppController {
 		Database db = new Database();
 		
 		//check the apiKey		
-		if( db.isValidApi(apiKey)) {
+		if( Service.isValidApi(apiKey)) {
 			
 			//check length validations
 			if( Service.isValidRoleAndLocation(roleName, location) ) {
@@ -127,7 +126,7 @@ public class AppController {
 		Database db = new Database();
 		
 		//Check the API key
-		if( db.isValidApi(apiKey)) {
+		if( Service.isValidApi(apiKey)) {
 			
 			//Check length validations
 			if(Service.isValidRoleAndLocation(keyword, location)) {

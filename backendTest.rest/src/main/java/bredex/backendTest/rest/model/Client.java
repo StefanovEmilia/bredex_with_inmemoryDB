@@ -1,9 +1,22 @@
 package bredex.backendTest.rest.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="client")
 public class Client {
 
+	@Id
+	@Column(name="apiKey")
 	private String apiKey;
+	
+	@Column(name="name")
 	private String name;
+	
+	@Column(name="email")
 	private String email;
 
 	public Client() {
