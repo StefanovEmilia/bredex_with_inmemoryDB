@@ -22,7 +22,7 @@ import bredex.backendTest.rest.model.Client;
 @RestController
 public class AppController {
 	
-	@GetMapping("/client")
+	@PostMapping("/client")
 	public Response regClient(@RequestParam(name="name") String name, @RequestParam(name="email") String email) throws Exception {
 		
 		//Create a response. 
