@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="position")
+@Table(name="positions")
 public class Position {
 	
 	@Id
@@ -16,7 +16,7 @@ public class Position {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int id;
 	
-	@Column(name="advertiser_apiKey")
+	@Column(name="advertiser")
 	private String advertiser;
 	
 	@Column(name="roleName")

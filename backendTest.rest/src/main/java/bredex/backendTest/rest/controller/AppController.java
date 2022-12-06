@@ -22,7 +22,7 @@ import bredex.backendTest.rest.model.Client;
 @RestController
 public class AppController {
 	
-	@PostMapping("/client")
+	@GetMapping("/client")
 	public Response regClient(@RequestParam(name="name") String name, @RequestParam(name="email") String email) throws Exception {
 		
 		//Create a response. 
@@ -76,7 +76,7 @@ public class AppController {
 		return response;
 	}
 	
-	@PostMapping("/position")
+	@GetMapping("/position")
 	public Response createPosition(@RequestParam(name="roleName") String roleName, @RequestParam(name="location") String location, 
 								 @RequestParam(name="apiKey") String apiKey) throws Exception {
 		
@@ -176,6 +176,8 @@ public class AppController {
 		Database db = new Database();
 		
 		Position pos = db.getPositionById(id);
+		
+		System.out.println(pos);
 		
 		db.close();
 		

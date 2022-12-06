@@ -71,9 +71,9 @@ public class Service {
 		
 		List<Client> clients = new ArrayList<Client>();
 		
-		Client client1 = new Client("22ce4d33-6f0b-47b5-b3bf-a01204d9940b", "John Doe", "tesztApi.kod?@gmail.com");
-		Client client2 = new Client("ab796345-f91f-4646-a294-f8e6f1fe0807", "Gipsz Jakab", "jakab0089@domain.com");
-		Client client3 = new Client("test", "Teszt Elek", "teszt@gmail.com");
+		Client client1 = new Client(1, "22ce4d33-6f0b-47b5-b3bf-a01204d9940b", "John Doe", "tesztApi.kod?@gmail.com");
+		Client client2 = new Client(2, "ab796345-f91f-4646-a294-f8e6f1fe0807", "Gipsz Jakab", "jakab0089@domain.com");
+		Client client3 = new Client(3, "test", "Teszt Elek", "teszt@gmail.com");
 		
 		clients.add(client1);
 		clients.add(client2);

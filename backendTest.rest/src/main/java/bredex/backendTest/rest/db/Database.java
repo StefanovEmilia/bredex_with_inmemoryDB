@@ -18,29 +18,35 @@ import bredex.backendTest.rest.model.Client;
 public class Database {
 
 	private SessionFactory sessionFactory;
+	private static boolean dataLoaded = false;
 
 	public Database() {
 
 		StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
 
 		sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
-
-		Session session = sessionFactory.openSession();
-		Transaction tr = session.beginTransaction();
-
-		List<Client> clients = Service.clientsDML();
-		List<Position> positions = Service.positionsDML();
-
-		for (int i = 0; i < clients.size(); i++) {
-			session.save(clients.get(i));
+		
+		if (!dataLoaded) {
+			List clients = Service.clientsDML();
+			
+			List positions = Service.positionsDML();
+			
+			Session session = sessionFactory.openSession();
+			Transaction tr = session.beginTransaction();
+			
+			for(int i = 0; i < clients.size(); i++) {
+				session.save(clients.get(i));
+			}
+			
+			for(int i = 0; i < positions.size(); i++) {
+				session.save(positions.get(i));
+			}
+			
+			tr.commit();
+			session.close();
+			
+			dataLoaded = true;
 		}
-
-		for (int i = 0; i < positions.size(); i++) {
-			session.save(positions.get(i));
-		}
-
-		tr.commit();
-		session.close();
 
 	}
 
@@ -89,8 +95,15 @@ public class Database {
 
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
-
-		client = session.get(Client.class, apiKey);
+		
+		Query q = session.createQuery("SELECT c FROM Client c WHERE apiKey= :apiKey", Client.class);
+		q.setParameter("apiKey", apiKey);
+		
+		List<Client> clients = q.getResultList();
+		
+		if(clients.size() == 1) {
+			client = clients.get(0);
+		} 
 
 		tx.commit();
 		session.close();

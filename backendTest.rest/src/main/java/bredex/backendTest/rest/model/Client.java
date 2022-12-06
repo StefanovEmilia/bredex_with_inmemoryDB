@@ -2,14 +2,20 @@ package bredex.backendTest.rest.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="client")
+@Table(name="clients")
 public class Client {
 
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="id")
+	private int id;
+	
 	@Column(name="apiKey")
 	private String apiKey;
 	
@@ -24,8 +30,9 @@ public class Client {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Client(String apiKey, String name, String email) {
+	public Client(int id, String apiKey, String name, String email) {
 		super();
+		this.id = id;
 		this.apiKey = apiKey;
 		this.name = name;
 		this.email = email;
