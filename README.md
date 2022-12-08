@@ -1,4 +1,5 @@
 # bredex_with_inmemoryDB
+<<<<<<< HEAD
 <p>Try to create my backend test excercise with inmemory DB still using Hibernate:</p>
 
 <h1> Create a job search REST API for 4 requests: </h1>
@@ -65,3 +66,6 @@ Maven dependencies: Spring web, Hibernate, MySQL Connector
 
 
 
+=======
+Try to create my backend test excercise with inmemory DB
+>>>>>>> a95aa35297412701a3fdfad4e7e0c619839e09df
