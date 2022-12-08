@@ -74,6 +74,6 @@
 <p><b>Develop current requests:</b> </p>
 <ul><li>GET/position/search: searching not only the role name and the location, but also a current advertiser's all posts</li></ul>
 
-<p>To run this code, you need Java11 (with Spring Boot), and MySQL with Hibernate. </p>
+<p>To run this code, you need Java11 (with Spring Boot), and HSQLDB with Hibernate. </p>
 <p>Maven dependencies: Spring web, Hibernate, HSQLDB, JPA</p>
 
