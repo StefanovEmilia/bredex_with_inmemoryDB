@@ -29,7 +29,6 @@
     <li>location (max 50 char)</li>
 </ul>
 <p>Both data could be stay unfilled. In this case the program shows all the job posts. </p>
-<p>Response: URL list with the matched positions</p>
 <p>Link for the Rest Template:
     <span><a href="">http://localhost:8080/position/search?keyword=[[keyword]]&location=[[location]]&apiKey=[[apiKey]]</a></span></p>
 <p>Response: URL list with the matched positions</p>
@@ -46,35 +45,33 @@
 <p>Link for the Rest Template:
     <span><a href="">http://localhost:8080/position/{id}</a></span> </p>
 <p>Response: position details</p>
+<ul>
+    <li>Application/json</li>
+    <li>Object</li>
+    <li>message – String</li>
+    <li>urlList – ArrayList[String]</li>
+</ul>
+</br>
+<p>IF your response is an <span><b>error message</b></span> for any request, then: </p>
+<p>Response: </p>
+<ul>
+    <li>Application/json</li>
+    <li>Object</li>
+    <li>message – String</li>
+    <li>statusCode – int</li>
+    <li>success - Boolean</li>
+</ul>
 
-	Application/json
-	Object
-	message – String
-	urlList – ArrayList<String>
-IF your response is an error message, then: 
-Response: 
-	Application/json
-	Object
-	message – String
-	statusCode – int
-	success – Boolean
-
-Further Development Opportunities:
-New requests: 
+<h4>Further Development Opportunities:</h4>
+<p><b>New requests:</b> </p>
 - POST/client/edit -> It allows to set their own data after the registration except the apiKey
 - POST/client/delete -> Delete a client
 - POST/position/edit -> Update a registered position's data
 - POST/position/delete -> Delete a job post
 
-Develop current requests: 
+<p><b>Develop current requests:</b> </p>
 - GET/position/search: searching not only the role name and the location, but also a current advertiser's all posts
 
-To run this code, you need Java11 (with Spring Boot), and MySQL with Hibernate. 
-Maven dependencies: Spring web, Hibernate, MySQL Connector
+<p>To run this code, you need Java11 (with Spring Boot), and MySQL with Hibernate. </p>
+<p>Maven dependencies: Spring web, Hibernate, HSQLDB, JPA</p>
 
-
-
-
-=======
-Try to create my backend test excercise with inmemory DB
->>>>>>> a95aa35297412701a3fdfad4e7e0c619839e09df
