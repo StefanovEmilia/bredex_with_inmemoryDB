@@ -64,13 +64,15 @@
 
 <h4>Further Development Opportunities:</h4>
 <p><b>New requests:</b> </p>
-- POST/client/edit -> It allows to set their own data after the registration except the apiKey
-- POST/client/delete -> Delete a client
-- POST/position/edit -> Update a registered position's data
-- POST/position/delete -> Delete a job post
+<ul>
+    <li>POST/client/edit -> It allows to set their own data after the registration except the apiKey</li>
+    <li>POST/client/delete -> Delete a client</li>
+    <li>POST/position/edit -> Update a registered position's data</li>
+    <li>POST/position/delete -> Delete a job post</li>
+</ul>
 
 <p><b>Develop current requests:</b> </p>
-- GET/position/search: searching not only the role name and the location, but also a current advertiser's all posts
+<ul><li>GET/position/search: searching not only the role name and the location, but also a current advertiser's all posts</li></ul>
 
 <p>To run this code, you need Java11 (with Spring Boot), and MySQL with Hibernate. </p>
 <p>Maven dependencies: Spring web, Hibernate, HSQLDB, JPA</p>
