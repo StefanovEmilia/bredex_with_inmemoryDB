@@ -18,35 +18,12 @@ import bredex.backendTest.rest.model.Client;
 public class Database {
 
 	private SessionFactory sessionFactory;
-	private static boolean dataLoaded = false;
 
 	public Database() {
 
 		StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure().build();
 
 		sessionFactory = new MetadataSources(registry).buildMetadata().buildSessionFactory();
-		
-		if (!dataLoaded) {
-			List clients = Service.clientsDML();
-			
-			List positions = Service.positionsDML();
-			
-			Session session = sessionFactory.openSession();
-			Transaction tr = session.beginTransaction();
-			
-			for(int i = 0; i < clients.size(); i++) {
-				session.save(clients.get(i));
-			}
-			
-			for(int i = 0; i < positions.size(); i++) {
-				session.save(positions.get(i));
-			}
-			
-			tr.commit();
-			session.close();
-			
-			dataLoaded = true;
-		}
 
 	}
 

@@ -76,7 +76,7 @@ public class AppController {
 		return response;
 	}
 	
-	@PostMapping("/position")
+	@GetMapping("/position")
 	public Response createPosition(@RequestParam(name="roleName") String roleName, @RequestParam(name="location") String location, 
 								 @RequestParam(name="apiKey") String apiKey) throws Exception {
 		
